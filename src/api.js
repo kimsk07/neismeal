@@ -41,6 +41,12 @@ export const searchSchools = async (atptOfcdcScCode, schoolName) => {
       },
     });
 
+    // 데이터가 없을 경우 RESULT 응답
+    if (response.data && response.data.RESULT) {
+      console.log('NEIS API 메시지:', response.data.RESULT.MESSAGE);
+      return [];
+    }
+
     // 응답 구조: response.data.schoolInfo[1].row
     if (response.data && response.data.schoolInfo && response.data.schoolInfo[1]) {
       let rows = response.data.schoolInfo[1].row;
