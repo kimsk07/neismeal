@@ -43,9 +43,16 @@ export const searchSchools = async (atptOfcdcScCode, schoolName) => {
 
     // 응답 구조: response.data.schoolInfo[1].row
     if (response.data && response.data.schoolInfo && response.data.schoolInfo[1]) {
-      const rows = response.data.schoolInfo[1].row;
-      if (!Array.isArray(rows)) {
+      let rows = response.data.schoolInfo[1].row;
+      
+      // 단일 결과인 경우 객체, 복수 결과인 경우 배열로 반환됨
+      if (!rows) {
         return [];
+      }
+      
+      // 단일 객체를 배열로 변환
+      if (!Array.isArray(rows)) {
+        rows = [rows];
       }
       
       return rows.map((school) => ({
@@ -99,8 +106,15 @@ export const getWeeklyMealInfo = async (atptOfcdcScCode, sdSchulCode, baseDate) 
 
         // 응답 구조: response.data.mealServiceDietInfo[1].row
         if (response.data && response.data.mealServiceDietInfo && response.data.mealServiceDietInfo[1]) {
-          const rows = response.data.mealServiceDietInfo[1].row;
-          if (Array.isArray(rows)) {
+          let rows = response.data.mealServiceDietInfo[1].row;
+          
+          // 단일 결과인 경우 객체, 복수 결과인 경우 배열로 반환됨
+          if (rows) {
+            // 단일 객체를 배열로 변환
+            if (!Array.isArray(rows)) {
+              rows = [rows];
+            }
+            
             rows.forEach((meal) => {
               allMeals.push({
                 date: mlsvYmd,

@@ -25,9 +25,14 @@ const searchSchools = async (atptOfcdcScCode, schoolName) => {
     console.log('API 응답 구조:', Object.keys(response.data));
     
     if (response.data && response.data.schoolInfo && response.data.schoolInfo[1]) {
-      const rows = response.data.schoolInfo[1].row;
-      if (!Array.isArray(rows)) {
+      let rows = response.data.schoolInfo[1].row;
+      if (!rows) {
         return [];
+      }
+      
+      // 단일 객체를 배열로 변환
+      if (!Array.isArray(rows)) {
+        rows = [rows];
       }
       
       const results = rows.map((school) => ({
@@ -84,17 +89,26 @@ const getWeeklyMealInfo = async (atptOfcdcScCode, sdSchulCode, baseDate) => {
         });
 
         if (response.data && response.data.mealServiceDietInfo && response.data.mealServiceDietInfo[1]) {
-          const rows = response.data.mealServiceDietInfo[1].row;
-          if (Array.isArray(rows)) {
-            rows.forEach((meal) => {
-              allMeals.push({
-                date: mlsvYmd,
-                displayDate: currentDate.toLocaleDateString('ko-KR', { weekday: 'short', month: 'numeric', day: 'numeric' }),
-                meal: meal.DDISH_NM || '급식 정보 없음',
-              });
-            });
-            console.log(`    ✅ 급식 정보 발견`);
+          let rows = response.data.mealServiceDietInfo[1].row;
+          
+          if (!rows) {
+            console.log(`    ℹ️  급식 정보 없음`);
+            continue;
           }
+          
+          // 단일 객체를 배열로 변환
+          if (!Array.isArray(rows)) {
+            rows = [rows];
+          }
+          
+          rows.forEach((meal) => {
+            allMeals.push({
+              date: mlsvYmd,
+              displayDate: currentDate.toLocaleDateString('ko-KR', { weekday: 'short', month: 'numeric', day: 'numeric' }),
+              meal: meal.DDISH_NM || '급식 정보 없음',
+            });
+          });
+          console.log(`    ✅ 급식 정보 발견`);
         } else {
           console.log(`    ℹ️  급식 정보 없음`);
         }
